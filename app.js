@@ -14,7 +14,7 @@ var app = express();
 //connection à BD
 const mongoose = require('mongoose');
 mongoose.Promise = Promise;
-mongoose.connect(process.env.MONGODB_URI || 'mongoose://localhost/my-database-name');
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/AcaiGoDB');
 
 app.use(function myMiddleware(req, res, next) {
   console.log('Hello World!');
