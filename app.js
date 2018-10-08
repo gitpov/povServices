@@ -12,7 +12,7 @@ var app = express();
 //////// TEST EXO PROF MY-APP ////////////////
 
 //connection à BD
-const mongoose = require('mongoose');
+/*const mongoose = require('mongoose');
 mongoose.Promise = Promise;
 mongoose.connect(process.env.MONGODB_URI || 'mongoose://localhost/my-database-name');
 
@@ -27,7 +27,7 @@ app.use('/hello', function hello(req, res, next) {
 
 app.post('/ping', function ping(req, res, next) {
   res.send('pong');
-});
+});*/
 
 /////////////////////////FIN TEST/////////////////
 
