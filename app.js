@@ -9,6 +9,28 @@ var usersRouter = require('./routes/users');
 
 var app = express();
 
+//////// TEST EXO PROF MY-APP ////////////////
+
+//connection à BD
+const mongoose = require('mongoose');
+mongoose.Promise = Promise;
+mongoose.connect(process.env.MONGODB_URI || 'mongoose://localhost/my-database-name');
+
+app.use(function myMiddleware(req, res, next) {
+  console.log('Hello World!');
+  next();
+});
+
+app.use('/hello', function hello(req, res, next) {
+  res.send('world');
+});
+
+app.post('/ping', function ping(req, res, next) {
+  res.send('pong');
+});
+
+/////////////////////////FIN TEST/////////////////
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
