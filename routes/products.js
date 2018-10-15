@@ -26,10 +26,8 @@ router.post('/', function(req, res, next) {
 });
 
 router.delete('/:productId', function(req, res, next) {
-
     res.status(200).json({
         message: 'deleted product'
     });
 });
-
 module.exports = router;
