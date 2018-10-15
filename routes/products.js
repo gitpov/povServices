@@ -12,6 +12,19 @@ router.get('/', function(req, res, next) {
     });
 });
 
+router.get('/:productId', function(req, res, next) {
+
+    const id = req.params.productId;
+    product_model.findById(id).exec(function(err, product) {
+        if (err) { return next(err); }
+        else if (!product) { return res.sendStatus(404); }
+
+        res.send(product);
+
+    });
+});
+
+
 router.post('/', function(req, res, next) {
 
     const newProduct = new product_model(req.body);
