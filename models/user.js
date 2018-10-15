@@ -3,14 +3,14 @@ const Schema = mongoose.Schema;
 
 // Define the schema for users
 const userSchema = new Schema({
-  firstname: String,
-  name: String,
-  email: String,
-  password: String,
+  firstname: {type: String, required: true},
+  name: {type: String, required: true},
+  email: {type: String, required: true},
+  password: {type: String, required: true},
   address: {
-    street: String,
-    NPA: Number,
-    City: String
+    street: {type: String, required: true},
+    NPA: {type: Number, required: true},
+    City: {type: String, required: true},
   }
 });
 // Create the model from the schema and export it
