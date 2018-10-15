@@ -32,7 +32,7 @@ router.delete('/:userId', loadUserId, function(req, res, next) {
 router.post('/', function(req, res, next) {
     
     const plainPassword = req.body.password;
-  const saltRounds = 10;
+    const saltRounds = 10;
   
     bcrypt.hash(plainPassword, saltRounds, function(err, hashedPassword) {
     if (err) {
