@@ -15,10 +15,10 @@ router.get('/', function(req, res, next) {
 router.get('/:productId', function(req, res, next) {
 
     const id = req.params.productId;
+
     product_model.findById(id).exec(function(err, product) {
         if (err) { return next(err); }
         else if (!product) { return res.sendStatus(404); }
-
         res.send(product);
 
     });
@@ -38,8 +38,19 @@ router.post('/', function(req, res, next) {
 });
 
 router.delete('/:productId', function(req, res, next) {
-    res.status(200).json({
-        message: 'deleted product'
+
+    const id = req.params.productId;
+
+    product_model.findById(id).exec(function(err, product) {
+        if (err) { return next(err); }
+        else if (!product) { return res.sendStatus(404); }
+        product.remove(function(err,deletedProduct){
+            if (err) {
+                return next(err);
+            }
+            res.sendStatus(204);
+        });
     });
 });
+
 module.exports = router;
