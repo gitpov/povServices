@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const User = require('../models/user');
+var bcrypt = require('bcryptjs');
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -40,16 +41,24 @@ router.delete('/:id', function(req, res, next) {
 
 /* POST new user */
 router.post('/', function(req, res, next) {
-  // Create a new document from the JSON in the request body
-  const newUser = new User(req.body);
-  // Save that document
-  newUser.save(function(err, savedUser) {
+    
+    const plainPassword = req.body.password;
+  const saltRounds = 10;
+  
+    bcrypt.hash(plainPassword, saltRounds, function(err, hashedPassword) {
     if (err) {
       return next(err);
     }
-    // Send the saved document in the response
-    res.send(savedUser);
-  });
+    const newUser = new User(req.body);
+    newUser.password = hashedPassword;
+    newUser.save(function(err, savedUser) {
+      if (err) {
+        return next(err);
+      }
+      res.send(savedUser);
+    });
+  }); 
+    
 });
 
 
