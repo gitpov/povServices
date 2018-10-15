@@ -52,5 +52,4 @@ function loadUserId(req, res, next) {
         next();
     });
 }
-
 module.exports = router;

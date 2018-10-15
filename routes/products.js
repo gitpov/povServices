@@ -12,16 +12,10 @@ router.get('/', function(req, res, next) {
     });
 });
 
-router.get('/:productId', function(req, res, next) {
+router.get('/:productId', loadProductId, function(req, res, next) {
 
-    const id = req.params.productId;
+    res.send(req.product);
 
-    product_model.findById(id).exec(function(err, product) {
-        if (err) { return next(err); }
-        else if (!product) { return res.sendStatus(404); }
-        res.send(product);
-
-    });
 });
 
 router.post('/', function(req, res, next) {
@@ -37,20 +31,26 @@ router.post('/', function(req, res, next) {
     });
 });
 
-router.delete('/:productId', function(req, res, next) {
+router.delete('/:productId', loadProductId, function(req, res, next) {
 
-    const id = req.params.productId;
-
-    product_model.findById(id).exec(function(err, product) {
-        if (err) { return next(err); }
-        else if (!product) { return res.sendStatus(404); }
-        product.remove(function(err,deletedProduct){
-            if (err) {
-                return next(err);
-            }
-            res.sendStatus(204);
-        });
+    req.product.remove(function(err,deletedproduct){
+        if (err) {
+            return next(err);
+        }
+        res.sendStatus(204);
     });
 });
+
+function loadProductId(req, res, next) {
+    product_model.findById(req.params.productId).exec(function(err, product) {
+        if (err) {
+            return next(err);
+        } else if (!product) {
+            return res.status(404).send('No product found with ID ' + req.params.productId);
+        }
+        req.product = product;
+        next();
+    });
+}
 
 module.exports = router;
