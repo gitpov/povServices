@@ -12,6 +12,10 @@ router.get('/', function(req, res, next) {
   });
 });
 
+router.get('/:orderId', loadOrderId, function(req, res, next) {
+    res.send(req.order);
+});
+
 router.post('/', function(req, res, next) {
 const newOrder = new Order(req.body);
     newOrder.save(function(err, savedOrder) {
@@ -24,10 +28,25 @@ const newOrder = new Order(req.body);
 });    
     
     
-router.delete('/:orderId', function(req, res, next) {
-    res.status(200).json({
-        message: 'deleted order'
-    });
+router.delete('/:orderId', loadOrderId ,function(req, res, next) {
+    req.order.remove(function(err,deletedorder){
+        if (err) {
+          return next(err);
+        }
+        res.sendStatus(204);
+      });
 });          
+
+function loadOrderId(req, res, next) {
+    Order.findById(req.params.orderId).exec(function(err, order) {
+        if (err) {
+            return next(err);
+        } else if (!order) {
+            return res.status(404).send('No order found with ID ' + req.params.orderId);
+        }
+        req.order = order;
+        next();
+    });
+}
 
 module.exports = router;
