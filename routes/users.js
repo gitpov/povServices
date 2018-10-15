@@ -12,6 +12,18 @@ router.get('/', function(req, res, next) {
   });
 });
 
+router.get('/:userId', function(req, res, next) {
+
+    const id = req.params.userId;
+    User.findById(id).exec(function(err, user) {
+        if (err) { return next(err); }
+        else if (!user) { return res.sendStatus(404); }
+
+        res.send(user);
+
+    });
+});
+
 router.delete('/:id', function(req, res, next) {
   User.findById(req.params.id).exec(function(err, user) {
     if (err) { return next(err); }
