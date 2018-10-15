@@ -24,7 +24,6 @@ router.get('/:productId', function(req, res, next) {
     });
 });
 
-
 router.post('/', function(req, res, next) {
 
     const newProduct = new product_model(req.body);
