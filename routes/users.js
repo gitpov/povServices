@@ -12,30 +12,19 @@ router.get('/', function(req, res, next) {
   });
 });
 
-router.get('/:userId', function(req, res, next) {
+router.get('/:userId', loadUserId, function(req, res, next) {
 
-    const id = req.params.userId;
-    User.findById(id).exec(function(err, user) {
-        if (err) { return next(err); }
-        else if (!user) { return res.sendStatus(404); }
-
-        res.send(user);
-
-    });
+    res.send(req.user);
 });
 
-router.delete('/:id', function(req, res, next) {
-  User.findById(req.params.id).exec(function(err, user) {
-    if (err) { return next(err); }
-    else if (!user) { return res.sendStatus(404); }
-    user.remove(function(err,deleteduser){
+router.delete('/:userId', loadUserId, function(req, res, next) {
+
+    req.user.remove(function(err,deleteduser){
       if (err) {
         return next(err);
       }
-
       res.sendStatus(204);
     });
-  });
 });
 
 /* POST new user */
@@ -52,5 +41,16 @@ router.post('/', function(req, res, next) {
   });
 });
 
+function loadUserId(req, res, next) {
+    User.findById(req.params.userId).exec(function(err, user) {
+        if (err) {
+            return next(err);
+        } else if (!user) {
+            return res.status(404).send('No user found with ID ' + req.params.userId);
+        }
+        req.user = user;
+        next();
+    });
+}
 
 module.exports = router;

@@ -8,6 +8,8 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var productsRouter = require('./routes/products');
 var orderRouter = require('./routes/orders');
+const User = require('./models/user');
+
 
 
 var app = express();
@@ -24,13 +26,6 @@ app.use(function myMiddleware(req, res, next) {
   next();
 });
 
-app.use('/hello', function hello(req, res, next) {
-  res.send('world');
-});
-
-app.post('/ping', function ping(req, res, next) {
-  res.send('pong');
-});
 
 /////////////////////////FIN TEST/////////////////
 
