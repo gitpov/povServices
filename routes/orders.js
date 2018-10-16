@@ -35,7 +35,23 @@ router.delete('/:orderId', loadOrderId ,function(req, res, next) {
         }
         res.sendStatus(204);
       });
-});          
+});
+
+router.patch('/:orderId', loadOrderId ,function(req, res, next) {
+
+    // Update properties present in the request body
+    if (req.body.state !== undefined) {
+        req.order.state = req.body.state;
+    }
+
+    req.order.save(function(err,savedOrder){
+        if (err) {
+            return next(err);
+        }
+        debug(`Updated order "${savedOrder.state}"`);
+        res.send(savedOrder);
+    });
+});
 
 function loadOrderId(req, res, next) {
     Order.findById(req.params.orderId).exec(function(err, order) {

@@ -44,6 +44,7 @@ router.put('/:productId', loadProductId, function(req, res, next) {
 
         debug(`Updated product "${updatedProduct.name}"`);
         res.send(updatedProduct);
+        res.sendStatus(204);
     });
 });
 

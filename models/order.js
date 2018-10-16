@@ -8,7 +8,8 @@ const OrderSchema = new Schema({
         productId: {type: Schema.Types.ObjectId},
         quantity: {type: Number}
     },
-    userId: {type: Schema.Types.ObjectId}
+    userId: {type: Schema.Types.ObjectId},
+    state: {type: String}
 });
 
 
