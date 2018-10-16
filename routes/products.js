@@ -31,6 +31,22 @@ router.post('/', function(req, res, next) {
     });
 });
 
+router.put('/:productId', loadProductId, function(req, res, next) {
+
+    req.product.name = req.body.name;
+    req.product.price = req.body.price;
+    req.product.image = req.body.image;
+
+    req.product.save(function(err, updatedProduct) {
+        if (err) {
+            return next(err);
+        }
+
+        debug(`Updated product "${updatedProduct.name}"`);
+        res.send(updatedProduct);
+    });
+});
+
 router.delete('/:productId', loadProductId, function(req, res, next) {
 
     req.product.remove(function(err,deletedproduct){
