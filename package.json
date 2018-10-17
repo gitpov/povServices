@@ -7,6 +7,7 @@
     "dev": "SET DEBUG=povServices-git-branching:* & npm start"
   },
   "dependencies": {
+    "apidoc": "^0.17.6",
     "bcryptjs": "^2.4.3",
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.9",

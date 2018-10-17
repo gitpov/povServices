@@ -1,9 +1,21 @@
+
+
 var express = require('express');
 var router = express.Router();
 const User = require('../models/user');
 var bcrypt = require('bcryptjs');
 
-/* GET users listing. */
+/**
+ * @api {get} /users/ Request all users's information
+ * @apiName GetUsers
+ * @apiGroup User
+ * @apiPermission admin
+ * 
+ * @apiUse successUser
+ * 
+ * @apiError NoAccessRight Only authenticated Admins can access the data.
+ */
+
 router.get('/', function(req, res, next) {
   User.find().sort('name').exec(function(err, users) {
     if (err) {
@@ -13,11 +25,45 @@ router.get('/', function(req, res, next) {
   });
 });
 
+/**
+ * @api {get} /users/:id Request a user's information
+ * @apiName GetUser
+ * @apiGroup User
+ * @apiPermission user and admin
+ * 
+ * @apiParamExample {url} Example usage:
+ * http://localhost:3000/users/5bc766872b4eb60ccc24766a
+ *
+ * @apiParam {Number} id Unique identifier of the user
+ *
+ * @apiUse successUser
+ * 
+ * @apiError NoAccessRight Only authenticated Admins can access the data.
+ * @apiError UserNotFound The <code>id</code> of the User was not found.
+ */
 router.get('/:userId', loadUserId, function(req, res, next) {
 
     res.send(req.user);
 });
 
+/**
+ * @api {delete} /users/:id Delete a user
+ * @apiName DeleteUser
+ * @apiGroup User
+ * @apiPermission user and admin
+ * 
+ * @apiParamExample {url} Example usage:
+ * http://localhost:3000/users/5bc766872b4eb60ccc24766a
+ *
+ * @apiParam {Number} id Unique identifier of the user
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 204 No-content
+ *     { }
+ * 
+ * @apiError NoAccessRight Only authenticated Admins can access the data.     
+ * @apiError UserNotFound The id of the User was not found.
+ */
 router.delete('/:userId', loadUserId, function(req, res, next) {
 
     req.user.remove(function(err,deleteduser){
@@ -28,7 +74,37 @@ router.delete('/:userId', loadUserId, function(req, res, next) {
     });
 });
 
-/* POST new user */
+/**
+ * @api {post} /users/ Add a user
+ * @apiName AddUser
+ * @apiGroup User
+ * @apiPermission none
+ * 
+ * @apiParamExample {json} Example usage:
+                 {
+  "firstname": "John",
+  "name": "Doe",
+  "email": "John.Doe@gmail.com",
+  "password": "toor",
+  "address": {
+    "street": "Avenue des Sports 20",
+   "NPA": "1401",
+    "City": "Yverdon-les-Bains"
+  }
+}
+ * @apiParam {String} firstName First name of the user
+ * @apiParam {String} name  Last name of the user
+ * @apiParam {String} e-mail E-mail of the user
+ * @apiParam {Hash} password Hash password ot the user
+ * @apiParam {object} address Address of the user
+ * @apiParam {String} address.street Street of the user
+ * @apiParam {Number} address.npa NPA of the user
+ * @apiParam {String} address.city City of the user
+ * 
+ * @apiUse successUser
+ * 
+ * @apiError User validation failed
+ */
 router.post('/', function(req, res, next) {
     
     const plainPassword = req.body.password;
@@ -62,3 +138,30 @@ function loadUserId(req, res, next) {
     });
 }
 module.exports = router;
+
+/**
+ * @apiDefine successUser
+ * @apiSuccess {String} firstName First name of the user
+ * @apiSuccess {String} name  Last name of the user
+ * @apiSuccess {String} e-mail E-mail of the user
+ * @apiSuccess {Hash} password Hash password ot the user
+ * @apiSuccess {object} address Address of the user 
+ * @apiSuccess {String} address.street Street of the user
+ * @apiSuccess {Number} address.npa NPA of the user
+ * @apiSuccess {String} address.city City of the user
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+    "_id": "5bc764b0a8ce7a3060a98af9",
+    "firstname": "John",
+    "name": "Doe",
+    "email": "John.Doe@gmail.com",
+    "password": "$2a$10$Py3VOkDWvoYcaydFjs6yEOlEmSiOXEeKURov1coXyc/7YqHMJo1uC",
+    "address": {
+        "street": "Avenue des Sports 20",
+        "NPA": 1401,
+        "City": "Yverdon-les-Bains"
+    },
+    "__v": 0
+  }
+ */
