@@ -62,7 +62,7 @@ router.get('/:userId', loadUserId, function(req, res, next) {
  *     { }
  * 
  * @apiError NoAccessRight Only authenticated Admins can access the data.     
- * @apiError UserNotFound The id of the User was not found.
+ * @apiError UserNotFound The <code>id</code> of the User was not found.
  */
 router.delete('/:userId', loadUserId, function(req, res, next) {
 
