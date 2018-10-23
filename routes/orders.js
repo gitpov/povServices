@@ -1,7 +1,9 @@
 var express = require('express');
 var router = express.Router();
+const mongoose = require('mongoose');
 const Order = require('../models/order');
-
+const Product = require('../models/product');
+const ObjectId = mongoose.Types.ObjectId;
 /* GET order listing. */
 router.get('/', function(req, res, next) {
   Order.find().sort('date').exec(function(err, orders) {
@@ -17,7 +19,8 @@ router.get('/:orderId', loadOrderId, function(req, res, next) {
 });
 
 router.post('/', function(req, res, next) {
-const newOrder = new Order(req.body);
+
+    const newOrder = new Order(req.body);
     newOrder.save(function(err, savedOrder) {
         if (err) {
             return next(err);
@@ -64,5 +67,32 @@ function loadOrderId(req, res, next) {
         next();
     });
 }
+
+/*
+function loadProductId(req, res, next) {
+
+    const productId = req.params.id;
+    if (!ObjectId.isValid(productId)) {
+        return productNotFound(res, productId);
+    }
+
+    Person.findById(req.params.id, function(err, product) {
+        if (err) {
+            return next(err);
+        } else if (!product) {
+            return productNotFound(res, productId);
+        }
+
+        req.product = product;
+        next();
+    });
+}
+*/
+
+/*
+function productNotFound(res, productId) {
+    return res.status(404).type('text').send(`No product found with ID ${productId}`);
+}
+*/
 
 module.exports = router;

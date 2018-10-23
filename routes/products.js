@@ -4,11 +4,45 @@ const router = express.Router();
 const product_model = require('../models/product');
 
 router.get('/', function(req, res, next) {
-    product_model.find().exec(function(err, products) {
+
+    product_model.find().count(function(err, total) {
         if (err) {
             return next(err);
         }
-        res.send(products);
+
+        let query = product_model.find();
+
+        let page = parseInt(req.query.page, 1);
+
+        console.log(page);
+/*
+        if (isNaN(page) || page < 1) {
+            page = 1;
+        }
+*/
+
+        let pageSize = parseInt(req.query.pageSize, 10);
+
+        if (isNaN(pageSize)) {
+            pageSize = 10;
+        } else if (pageSize > 100) {
+            pageSize = 100;
+        } else if (pageSize < 1) {
+            pageSize = 1;
+        }
+
+        query = query.skip((page - 1) * pageSize).limit(pageSize);
+
+        query.exec(function(err, products) {
+            if (err) { return next(err); }
+
+            res.send({
+                page: page,
+                pageSize: pageSize,
+                total: total,
+                data: products
+            });
+        });
     });
 });
 

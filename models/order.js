@@ -5,11 +5,16 @@ const OrderSchema = new Schema({
     date: { type: Date, default: Date.now },
     pickup_date: {type: Date},
     commandLine: {
-        productId: {type: Schema.Types.ObjectId},
-        quantity: {type: Number}
+        productId: {
+            type: Schema.Types.ObjectId,
+            ref: 'Product',
+            required: true,
+        },
+        quantity: {type: Number, required: true},
     },
     userId: {type: Schema.Types.ObjectId},
-    state: {type: String}
+    state: {type: String},
+
 });
 
 
