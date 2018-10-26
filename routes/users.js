@@ -120,7 +120,10 @@ router.post('/', function(req, res, next) {
       if (err) {
         return next(err);
       }
-      res.send(savedUser);
+      res
+          .status(201)
+          .set('Location', `http://localhost:3000/users/${savedUser._id}`)
+          .send(savedUser);
     });
   }); 
     

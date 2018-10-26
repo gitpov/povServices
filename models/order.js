@@ -7,12 +7,14 @@ const OrderSchema = new Schema({
     commandLine: {
         productId: {
             type: Schema.Types.ObjectId,
-            ref: 'Product',
-            required: true,
+            ref: 'Product'
         },
         quantity: {type: Number, required: true},
     },
-    userId: {type: Schema.Types.ObjectId},
+    userId: {
+        type: Schema.Types.ObjectId,
+        ref: 'User'
+    },
     state: {type: String},
 
 });

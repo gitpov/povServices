@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const mongoose = require('mongoose');
 
 const product_model = require('../models/product');
 
@@ -31,15 +32,20 @@ router.get('/', function(req, res, next) {
             pageSize = 1;
         }
 
-        query = query.skip((page - 1) * pageSize).limit(pageSize);
+        query = query.skip(page*pageSize).limit(pageSize);
 
         query.exec(function(err, products) {
-            if (err) { return next(err); }
+            if (err) {
+                return next(err);
+            } else {
+                var totalPages = Math.ceil(total / pageSize)
+            }
 
             res.send({
                 page: page,
                 pageSize: pageSize,
                 total: total,
+                totalPages: totalPages,
                 data: products
             });
         });

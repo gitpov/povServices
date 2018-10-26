@@ -3,15 +3,18 @@ var router = express.Router();
 const mongoose = require('mongoose');
 const Order = require('../models/order');
 const Product = require('../models/product');
+const User = require('../models/product');
 const ObjectId = mongoose.Types.ObjectId;
 /* GET order listing. */
+
 router.get('/', function(req, res, next) {
-  Order.find().sort('date').exec(function(err, orders) {
-    if (err) {
-      return next(err);
-    }
-    res.send(orders);
-  });
+
+    Order.find().populate('userId', '_id').populate('commandLine.productId', '_id').sort('date').exec(function(err, orders) {
+        if (err) {
+            return next(err);
+        }
+        res.send(orders);
+    });
 });
 
 router.get('/:orderId', loadOrderId, function(req, res, next) {
@@ -29,8 +32,7 @@ router.post('/', function(req, res, next) {
         res.send(savedOrder);
     });
 });    
-    
-    
+
 router.delete('/:orderId', loadOrderId ,function(req, res, next) {
     req.order.remove(function(err,deletedorder){
         if (err) {
@@ -57,7 +59,7 @@ router.patch('/:orderId', loadOrderId ,function(req, res, next) {
 });
 
 function loadOrderId(req, res, next) {
-    Order.findById(req.params.orderId).exec(function(err, order) {
+    Order.findById(req.params.orderId).populate('userId').exec(function(err, order) {
         if (err) {
             return next(err);
         } else if (!order) {
