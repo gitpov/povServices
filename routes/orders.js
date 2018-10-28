@@ -5,16 +5,18 @@ const Order = require('../models/order');
 const Product = require('../models/product');
 const User = require('../models/product');
 const ObjectId = mongoose.Types.ObjectId;
-/* GET order listing. */
 
 router.get('/', function(req, res, next) {
 
-    Order.find().populate('userId', '_id').populate('commandLine.productId', '_id').sort('date').exec(function(err, orders) {
+    Order.find().populate('userId', '_id').populate('commandLine.productId', '_id').sort('date')
+
+        .exec(function(err, orders) {
         if (err) {
             return next(err);
         }
         res.send(orders);
     });
+
 });
 
 router.get('/:orderId', loadOrderId, function(req, res, next) {
@@ -96,5 +98,25 @@ function productNotFound(res, productId) {
     return res.status(404).type('text').send(`No product found with ID ${productId}`);
 }
 */
+
+/*
+function getOrdersOrderedBy(orders, callback){
+
+    if (orders.length <= 0) {
+        return callback(undefined, []);
+    }
+
+    Order.find().aggregate([
+        {
+            $match: {
+                userId: {
+                    $in: orders.map(user => user._id)
+                }
+            }
+        },
+    ], callback);
+}
+*/
+
 
 module.exports = router;
