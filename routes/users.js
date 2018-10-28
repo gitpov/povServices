@@ -4,6 +4,7 @@ var express = require('express');
 var router = express.Router();
 const User = require('../models/user');
 var bcrypt = require('bcryptjs');
+const passport = require('passport');
 
 /**
  * @api {get} /users/ Request all users's information
@@ -25,6 +26,13 @@ router.get('/', function(req, res, next) {
   });
 });
 
+
+router.get('/protected', passport.authenticate('jwt', {session:false}), function(user, req, res, next) {
+    res.send(user.email); //id --> _id dans la DB
+});
+
+
+
 /**
  * @api {get} /users/:id Request a user's information
  * @apiName GetUser
@@ -41,10 +49,15 @@ router.get('/', function(req, res, next) {
  * @apiError NoAccessRight Only authenticated Admins can access the data.
  * @apiError UserNotFound The <code>id</code> of the User was not found.
  */
+
 router.get('/:userId', loadUserId, function(req, res, next) {
 
     res.send(req.user);
 });
+
+
+
+
 
 /**
  * @api {delete} /users/:id Delete a user
@@ -64,6 +77,7 @@ router.get('/:userId', loadUserId, function(req, res, next) {
  * @apiError NoAccessRight Only authenticated Admins can access the data.     
  * @apiError UserNotFound The <code>id</code> of the User was not found.
  */
+
 router.delete('/:userId', loadUserId, function(req, res, next) {
 
     req.user.remove(function(err,deleteduser){
@@ -128,6 +142,7 @@ router.post('/', function(req, res, next) {
   }); 
     
 });
+
 
 function loadUserId(req, res, next) {
     User.findById(req.params.userId).exec(function(err, user) {
