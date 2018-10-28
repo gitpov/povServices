@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 const User = require('../models/user');
 var bcrypt = require('bcryptjs');
+const passport = require('passport');
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -13,10 +14,17 @@ router.get('/', function(req, res, next) {
   });
 });
 
+router.get('/protected', passport.authenticate('jwt', {session:false}), function(user, req, res, next) {
+    res.send(user.email); //id --> _id dans la DB
+});
+
+
 router.get('/:userId', loadUserId, function(req, res, next) {
 
     res.send(req.user);
 });
+
+
 
 router.delete('/:userId', loadUserId, function(req, res, next) {
 
@@ -49,6 +57,7 @@ router.post('/', function(req, res, next) {
   }); 
     
 });
+
 
 function loadUserId(req, res, next) {
     User.findById(req.params.userId).exec(function(err, user) {
