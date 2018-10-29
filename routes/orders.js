@@ -23,6 +23,18 @@ router.get('/:orderId', loadOrderId, function(req, res, next) {
     res.send(req.order);
 });
 
+router.get('/:orderId/products', function(req, res, next){
+
+    Order.findById(req.params.orderId).exec(function(err, order) {
+        if (err) {
+            return next(err);
+        } else if (!order) {
+            return res.status(404).send('No order found with ID ' + req.params.orderId);
+        }
+        res.send(order.orderLines);
+    });
+});
+
 router.post('/', function(req, res, next) {
 
     const newOrder = new Order(req.body);

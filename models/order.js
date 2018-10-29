@@ -4,13 +4,13 @@ const Schema = mongoose.Schema;
 const OrderSchema = new Schema({
     date: { type: Date, default: Date.now },
     pickup_date: {type: Date},
-    commandLine: {
+    orderLines: [{
         productId: {
             type: Schema.Types.ObjectId,
             ref: 'Product'
         },
-        quantity: {type: Number, required: true},
-    },
+        quantity: {type: Number, required: true}
+    }],
     userId: {
         type: Schema.Types.ObjectId,
         ref: 'User'
