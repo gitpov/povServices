@@ -15,30 +15,30 @@ const passport = require('passport');
  * 
  * @apiError NoAccessRight Only authenticated Admins can access the data.
  */
-//passport.authenticate('jwt', {session: false}),
-router.get('/',  function (req, res, next) {
+//
+router.get('/', passport.authenticate('jwt', {session: false}), function (user, req, res, next) {
     User.find().sort('name').exec(function (err, users) {
         if (err) {
             return next(err);
         }
-        Order.aggregate([
-            {
-                $match: {
-                    user: { $in: users.map(user => user._id) }
-                }
-            },
-            {
-                $group: {
-                    _id: '$user',
-                    ordersCount: {
-                        $sum: 1
-                    }
-                }
-            }
-        ], function (err, results) {
-            res.send(results)
-        })
-        //res.send(users);
+//        Order.aggregate([
+//            {
+//                $match: {
+//                    user: { $in: users.map(user => user._id) }
+//                }
+//            },
+//            {
+//                $group: {
+//                    _id: '$user',
+//                    ordersCount: {
+//                        $sum: 1
+//                    }
+//                }
+//            }
+//        ], function (err, results) {
+//            res.send(results)
+//        })
+        res.send(users);
     });
 
 
