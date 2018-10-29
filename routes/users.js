@@ -107,8 +107,8 @@ router.delete('/:userId', loadUserId, passport.authenticate('jwt', {session: fal
 });
 
 /**
- * @api {delete} /users/:id Delete a user
- * @apiName DeleteUser
+ * @api {put} /users/:id Modifiy a user
+ * @apiName PutUser
  * @apiGroup User
  * @apiPermission user and admin
  * 
@@ -118,10 +118,10 @@ router.delete('/:userId', loadUserId, passport.authenticate('jwt', {session: fal
  * @apiParam {Number} id Unique identifier of the user
  *
  * @apiSuccessExample Success-Response:
- *     HTTP/1.1 204 No-content
- *     { }
+ *     HTTP/1.1 200 Ok
+ *     { user modified }
  * 
- * @apiError NoAccessRight Only authenticated Admins can access the data.     
+ * @apiError NoAccessRight Only authenticated User and logged User can access and modifiy his own data. 
  * @apiError UserNotFound The <code>id</code> of the User was not found.
  */
 
@@ -140,7 +140,6 @@ router.put('/:userId', loadUserId, passport.authenticate('jwt', {session: false}
     } 
     else
     {
-        console.log(req.body.address.City);
         req.user.firstname = req.body.firstname;
         req.user.name = req.body.name;
         req.user.email = req.body.email;
@@ -150,18 +149,75 @@ router.put('/:userId', loadUserId, passport.authenticate('jwt', {session: false}
         req.user.address.NPA = req.body.address.NPA;
         req.user.address.street = req.body.address.street;
 
-        req.user.save(function (err)
+        req.user.save(function (err, savedUser)
         {
             if (err)
             {
                 res.send(err);
             }
-            res.sendStatus(200);
+            res.status(200).send(savedUser);
         });
     }
     });
 });
 
+/**
+ * @api {pactch} /users/:id Modifiy a user
+ * @apiName PatchUser
+ * @apiGroup User
+ * @apiPermission user and admin
+ * 
+ * @apiParamExample {url} Example usage:
+ * http://localhost:3000/users/5bc766872b4eb60ccc24766a
+ *
+ * @apiParam {Number} id Unique identifier of the user
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 Ok
+ *     { user modified }
+ * 
+ * @apiError NoAccessRight Only authenticated User and logged User can access and modifiy his own data. 
+ * @apiError UserNotFound The <code>id</code> of the User was not found.
+ */
+router.patch('/:userId', loadUserId, passport.authenticate('jwt', {session: false}), function (user, req, res, next) 
+{
+    if (req.body.firstname !== undefined) 
+    {
+    req.user.firstname = req.body.firstname;
+    }
+    if (req.body.name !== undefined) 
+    {
+    req.user.name = req.body.name;
+    }
+    if (req.body.email !== undefined) 
+    {
+    req.user.email = req.body.email;
+    }
+    if (req.body.password !== undefined) 
+    {
+    req.user.password = req.body.password;
+    }
+    
+  if (req.body.address.City !== undefined) {
+    req.user.address.City = req.body.address.City;
+  }
+  
+  if (req.body.address.NPA !== undefined) {
+    req.user.address.NPA = req.body.address.NPA;
+  }
+  if (req.body.address.street !== undefined) {
+    req.user.address.street = req.body.address.street;
+  }
+
+
+  req.user.save(function(err, savedUser) {
+    if (err) {
+      return next(err);
+    }
+
+    res.status(200).send(savedUser);
+  });
+});
 /**
  * @api {post} /users/ Add a user
  * @apiName AddUser
