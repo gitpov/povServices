@@ -3,8 +3,12 @@ const router = express.Router();
 const mongoose = require('mongoose');
 
 const product_model = require('../models/product');
+const passport = require('passport');
+var admin = true;
 
-router.get('/', function(req, res, next) {
+
+router.get('/', function(req, res, next) 
+{
 
     product_model.find().count(function(err, total) {
         if (err) {
@@ -54,6 +58,7 @@ router.get('/', function(req, res, next) {
 
 router.get('/:productId', loadProductId, function(req, res, next) {
 
+
     res.send(req.product);
 
 });
@@ -80,8 +85,15 @@ router.get('/:productId', loadProductId, function(req, res, next) {
  * @apiError NoAccessRight Only authenticated Admins can access the data.  
  * @apiError Product validation failed
  */
-router.post('/', function(req, res, next) {
-
+router.post('/', passport.authenticate('jwt', {session: false}), function(user, req, res, next) 
+{
+ 
+ if(!admin)
+ {
+     res.status(401).send("You have to be admin to create new products");
+ }
+ else
+ {
     const newProduct = new product_model(req.body);
 
     newProduct.save(function(err, savedProduct) {
@@ -91,10 +103,17 @@ router.post('/', function(req, res, next) {
         // Send the saved document in the response
         res.send(savedProduct);
     });
-});
+    }});
 
-router.put('/:productId', loadProductId, function(req, res, next) {
+router.put('/:productId', loadProductId, passport.authenticate('jwt', {session: false}), function(user, req, res, next) 
+{
 
+if(!admin)
+ {
+     res.status(401).send("You have to be admin to modify new products");
+ }
+ else
+ {
     req.product.name = req.body.name;
     req.product.price = req.body.price;
     req.product.image = req.body.image;
@@ -104,11 +123,10 @@ router.put('/:productId', loadProductId, function(req, res, next) {
             return next(err);
         }
 
-        debug(`Updated product "${updatedProduct.name}"`);
-        res.send(updatedProduct);
-        res.sendStatus(204);
+        res.status(200).send(updatedProduct);
+
     });
-});
+    }});
 
 /**
  * @api {delete} /Product/:id Delete a Product
@@ -128,15 +146,20 @@ router.put('/:productId', loadProductId, function(req, res, next) {
  * @apiError NoAccessRight Only authenticated Admins can access the data.     
  * @apiError ProductNotFound The <code>id</code> of the product was not found.
  */
-router.delete('/:productId', loadProductId, function(req, res, next) {
-
+router.delete('/:productId', loadProductId, passport.authenticate('jwt', {session: false}), function(user, req, res, next) {
+ if(!admin)
+ {
+     res.status(401).send("You have to be admin to delete new products");
+ }
+ else
+ {
     req.product.remove(function(err,deletedproduct){
         if (err) {
             return next(err);
         }
         res.sendStatus(204);
     });
-});
+    }});
 
 function loadProductId(req, res, next) {
     product_model.findById(req.params.productId).exec(function(err, product) {
