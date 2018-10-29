@@ -91,6 +91,12 @@ router.get('/:userId', loadUserId, passport.authenticate('jwt', {session: false}
 
 router.delete('/:userId', loadUserId, passport.authenticate('jwt', {session: false}), function (user, req, res, next) {
 
+if(user._id !==req.params.userId)
+{
+    res.status(401).send('You can only delete your own account');
+}
+else
+{
     req.user.remove(function (err, deleteduser) 
     {
         if (err) {
@@ -98,6 +104,7 @@ router.delete('/:userId', loadUserId, passport.authenticate('jwt', {session: fal
         }
         res.sendStatus(204);
     });
+}
 });
 
 /**
