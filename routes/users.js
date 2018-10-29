@@ -15,55 +15,48 @@ const passport = require('passport');
  * 
  * @apiError NoAccessRight Only authenticated Admins can access the data.
  */
-//
+
 router.get('/', passport.authenticate('jwt', {session: false}), function (user, req, res, next) {
     User.find().sort('name').exec(function (err, users) {
         if (err) {
             return next(err);
         }
-//        Order.aggregate([
-//            {
-//                $match: {
-//                    user: { $in: users.map(user => user._id) }
-//                }
-//            },
-//            {
-//                $group: {
-//                    _id: '$user',
-//                    ordersCount: {
-//                        $sum: 1
-//                    }
-//                }
-//            }
-//        ], function (err, results) {
-//            res.send(results)
-//        })
+
+
         res.send(users);
     });
+})
 
-
-    /*
-            Order.aggregate([
-                {
-                    $match: {
-                        user: { $in: user.map(user => user._id) }
-                    }
-                },
-                {
-                    $group: {
-                        _id: '$user',
-                        ordersCount: {
-                            $sum: 1
-                        }
+router.get('/:userId/nbrOrders', function(req, res, next){
+    User.findOne({_id:req.params.userId},(err,user) => {
+        Order.aggregate([
+            {
+                $match: {
+                    "userId": user._id
+                }
+            },
+            {
+                $group: {
+                    _id: '$userId',
+                    ordersCount: {
+                        $sum: 1
                     }
                 }
-            ], function(err, results) {
+            }
+        ], function (err, results) {
+            if (err) {
+                return next(err);
+            }
+            res.send(results)
+        })
+    })
 
-                res.send(results)
-            });*/
+
 });
 
+
 router.get('/:userId/orders', passport.authenticate('jwt', {session: false}), function(user, req, res, next){
+
 
     let query = Order.find();
 
@@ -337,6 +330,43 @@ function loadUserId(req, res, next) {
         next();
     });
 }
+
+/*function countOrdersOrderedBy(users, callback) {
+
+    if (users.length <= 0) {
+        return callback(undefined, []);
+    }
+
+    Order.aggregate([
+        {
+            $match: {
+                user: {
+                    $in: users.map(user => user._id)
+                }
+            }
+        },
+        {
+            $group: {
+                _id: '$user',
+                ordersCount: {
+                    $sum: 1
+                }
+            }
+        }
+    ], callback);
+}
+
+function serializeUsers(users, orderCountsAggregation = []) {
+
+    const usersJson = users.map(user => user.toJSON());
+
+    orderCountsAggregation.forEach(function(aggregationResult) {
+        const user = usersJson.find(user => user.id == aggregationResult._id.toString());
+        user.userOrderCount = aggregationResult.ordersCount;
+    });
+
+    return usersJson;
+}*/
 
 module.exports = router;
 
