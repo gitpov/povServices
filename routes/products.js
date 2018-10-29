@@ -23,6 +23,18 @@ router.get('/', function(req, res, next)
         });
         
     }
+    else if(req.query.price)
+    {
+        query=query.where('price').equals(req.query.price);
+        query.exec(function(err, products){
+            if(err)
+            {
+                return next(err);
+            }
+            res.send(products);
+        });
+        
+    }
     else
     {
         
