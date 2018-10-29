@@ -9,6 +9,24 @@ var admin = true;
 
 router.get('/', function(req, res, next) 
 {
+    var query = product_model.find();
+
+    if(req.query.name)
+    {
+        query=query.where('name').equals(req.query.name);
+        query.exec(function(err, products){
+            if(err)
+            {
+                return next(err);
+            }
+            res.send(products);
+        });
+        
+    }
+    else
+    {
+        
+    
 
     product_model.find().count(function(err, total) {
         if (err) {
@@ -54,7 +72,7 @@ router.get('/', function(req, res, next)
             });
         });
     });
-});
+    }});
 
 router.get('/:productId', loadProductId, function(req, res, next) {
 
