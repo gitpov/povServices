@@ -59,7 +59,7 @@ router.get('/protected', passport.authenticate('jwt', {session: false}), functio
  * http://localhost:3000/users/5bc766872b4eb60ccc24766a
  *
  * @apiParam {Number} id Unique identifier of the user
-
+ 
  * 
  * @apiError NoAccessRight Only authenticated Admins can access the data.
  * @apiError UserNotFound The <code>id</code> of the User was not found.
@@ -91,20 +91,75 @@ router.get('/:userId', loadUserId, passport.authenticate('jwt', {session: false}
 
 router.delete('/:userId', loadUserId, passport.authenticate('jwt', {session: false}), function (user, req, res, next) {
 
-if(user._id !==req.params.userId)
-{
-    res.status(401).send('You can only delete your own account');
-}
-else
-{
-    req.user.remove(function (err, deleteduser) 
+    if (!user._id.equals(req.params.userId))
     {
+        res.status(401).send('You can only delete your own account');
+    } else
+    {
+        req.user.remove(function (err, deleteduser)
+        {
+            if (err) {
+                return next(err);
+            }
+            res.sendStatus(204);
+        });
+    }
+});
+
+/**
+ * @api {delete} /users/:id Delete a user
+ * @apiName DeleteUser
+ * @apiGroup User
+ * @apiPermission user and admin
+ * 
+ * @apiParamExample {url} Example usage:
+ * http://localhost:3000/users/5bc766872b4eb60ccc24766a
+ *
+ * @apiParam {Number} id Unique identifier of the user
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 204 No-content
+ *     { }
+ * 
+ * @apiError NoAccessRight Only authenticated Admins can access the data.     
+ * @apiError UserNotFound The <code>id</code> of the User was not found.
+ */
+
+router.put('/:userId', loadUserId, passport.authenticate('jwt', {session: false}), function (user, req, res, next) {
+    const plainPassword = req.body.password;
+    const saltRounds = 10;
+
+    bcrypt.hash(plainPassword, saltRounds, function (err, hashedPassword) {
         if (err) {
             return next(err);
         }
-        res.sendStatus(204);
+
+    if (!user._id.equals(req.params.userId))
+    {
+        res.status(401).send('You can only modifiy your own account');
+    } 
+    else
+    {
+        console.log(req.body.address.City);
+        req.user.firstname = req.body.firstname;
+        req.user.name = req.body.name;
+        req.user.email = req.body.email;
+        req.user.password = hashedPassword;
+        
+        req.user.address.City = req.body.address.City;
+        req.user.address.NPA = req.body.address.NPA;
+        req.user.address.street = req.body.address.street;
+
+        req.user.save(function (err)
+        {
+            if (err)
+            {
+                res.send(err);
+            }
+            res.sendStatus(200);
+        });
+    }
     });
-}
 });
 
 /**
