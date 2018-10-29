@@ -1,8 +1,7 @@
-
-
 var express = require('express');
 var router = express.Router();
 const User = require('../models/user');
+const Order = require('../models/order');
 var bcrypt = require('bcryptjs');
 const passport = require('passport');
 
@@ -16,13 +15,66 @@ const passport = require('passport');
  * 
  * @apiError NoAccessRight Only authenticated Admins can access the data.
  */
-
-router.get('/', passport.authenticate('jwt', {session: false}), function (user, req, res, next) {
+//passport.authenticate('jwt', {session: false}),
+router.get('/',  function (req, res, next) {
     User.find().sort('name').exec(function (err, users) {
         if (err) {
             return next(err);
         }
-        res.send(users);
+        Order.aggregate([
+            {
+                $match: {
+                    user: { $in: users.map(user => user._id) }
+                }
+            },
+            {
+                $group: {
+                    _id: '$user',
+                    ordersCount: {
+                        $sum: 1
+                    }
+                }
+            }
+        ], function (err, results) {
+            res.send(results)
+        })
+        //res.send(users);
+    });
+
+
+    /*
+            Order.aggregate([
+                {
+                    $match: {
+                        user: { $in: user.map(user => user._id) }
+                    }
+                },
+                {
+                    $group: {
+                        _id: '$user',
+                        ordersCount: {
+                            $sum: 1
+                        }
+                    }
+                }
+            ], function(err, results) {
+
+                res.send(results)
+            });*/
+});
+
+router.get('/:userId/orders', function(req, res, next){
+
+    let query = Order.find();
+
+    query = query.where('userId').equals(req.params.userId);
+    //le premier userId correspond au id du model order, le second est l'id dans le get
+
+    query.exec(function(err, orders) {
+        if (err) {
+            return next(err);
+        }
+        res.send(orders);
     });
 });
 
@@ -285,6 +337,7 @@ function loadUserId(req, res, next) {
         next();
     });
 }
+
 module.exports = router;
 
 /**

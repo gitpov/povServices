@@ -6,9 +6,12 @@ const Product = require('../models/product');
 const User = require('../models/product');
 const passport = require('passport');
 const ObjectId = mongoose.Types.ObjectId;
+
 var admin = true;
 
+
 /* GET order listing. */
+
 
 router.get('/', passport.authenticate('jwt', {session: false}), function(user, req, res, next) 
 {
@@ -19,12 +22,15 @@ if(!admin)
  else
  {
     Order.find().sort('date').exec(function(err, orders) {
+
         if (err) {
             return next(err);
         }
         res.send(orders);
     });
+
     }});
+
 
 router.get('/:orderId', loadOrderId, passport.authenticate('jwt', {session: false}), function(user, req, res, next) 
 {
@@ -32,9 +38,22 @@ router.get('/:orderId', loadOrderId, passport.authenticate('jwt', {session: fals
     res.send(req.order);
 });
 
+router.get('/:orderId/products', function(req, res, next){
+
+    Order.findById(req.params.orderId).exec(function(err, order) {
+        if (err) {
+            return next(err);
+        } else if (!order) {
+            return res.status(404).send('No order found with ID ' + req.params.orderId);
+        }
+        res.send(order.orderLines);
+    });
+});
+
 router.post('/', function(req, res, next) {
 
     const newOrder = new Order(req.body);
+    newOrder.userId = "5bc4a018d90b804bd49e28bd";
     newOrder.save(function(err, savedOrder) {
         if (err) {
             return next(err);
@@ -107,5 +126,25 @@ function productNotFound(res, productId) {
     return res.status(404).type('text').send(`No product found with ID ${productId}`);
 }
 */
+
+/*
+function getOrdersOrderedBy(orders, callback){
+
+    if (orders.length <= 0) {
+        return callback(undefined, []);
+    }
+
+    Order.find().aggregate([
+        {
+            $match: {
+                userId: {
+                    $in: orders.map(user => user._id)
+                }
+            }
+        },
+    ], callback);
+}
+*/
+
 
 module.exports = router;
