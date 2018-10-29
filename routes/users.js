@@ -3,6 +3,7 @@
 var express = require('express');
 var router = express.Router();
 const User = require('../models/user');
+const Order = require('../models/order');
 var bcrypt = require('bcryptjs');
 const passport = require('passport');
 
@@ -26,6 +27,20 @@ router.get('/', function(req, res, next) {
   });
 });
 
+router.get('/:userId/orders', function(req, res, next){
+
+    let query = Order.find();
+
+    query = query.where('userId').equals(req.params.userId);
+    //le premier userId correspond au id du model order, le second est l'id dans le get
+
+    query.exec(function(err, orders) {
+        if (err) {
+            return next(err);
+        }
+        res.send(orders);
+    });
+});
 
 router.get('/protected', passport.authenticate('jwt', {session:false}), function(user, req, res, next) {
     res.send(user.email); //id --> _id dans la DB

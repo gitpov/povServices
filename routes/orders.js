@@ -26,6 +26,7 @@ router.get('/:orderId', loadOrderId, function(req, res, next) {
 router.post('/', function(req, res, next) {
 
     const newOrder = new Order(req.body);
+    newOrder.userId = "5bc4a018d90b804bd49e28bd";
     newOrder.save(function(err, savedOrder) {
         if (err) {
             return next(err);
