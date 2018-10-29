@@ -63,7 +63,7 @@ router.get('/', passport.authenticate('jwt', {session: false}), function (user, 
             });*/
 });
 
-router.get('/:userId/orders', function(req, res, next){
+router.get('/:userId/orders', passport.authenticate('jwt', {session: false}), function(user, req, res, next){
 
     let query = Order.find();
 
