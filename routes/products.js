@@ -110,7 +110,7 @@ router.put('/:productId', loadProductId, passport.authenticate('jwt', {session: 
 
 if(!admin)
  {
-     res.status(401).send("You have to be admin to create new products");
+     res.status(401).send("You have to be admin to modify new products");
  }
  else
  {
@@ -149,7 +149,7 @@ if(!admin)
 router.delete('/:productId', loadProductId, passport.authenticate('jwt', {session: false}), function(user, req, res, next) {
  if(!admin)
  {
-     res.status(401).send("You have to be admin to create new products");
+     res.status(401).send("You have to be admin to delete new products");
  }
  else
  {

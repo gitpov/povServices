@@ -4,20 +4,31 @@ const mongoose = require('mongoose');
 const Order = require('../models/order');
 const Product = require('../models/product');
 const User = require('../models/product');
+const passport = require('passport');
 const ObjectId = mongoose.Types.ObjectId;
+var admin = true;
+
 /* GET order listing. */
 
-router.get('/', function(req, res, next) {
-
-    Order.find().populate('userId', '_id').populate('commandLine.productId', '_id').sort('date').exec(function(err, orders) {
+router.get('/', passport.authenticate('jwt', {session: false}), function(user, req, res, next) 
+{
+if(!admin)
+ {
+     res.status(401).send("You have to be admin to see all orders");
+ }
+ else
+ {
+    Order.find().sort('date').exec(function(err, orders) {
         if (err) {
             return next(err);
         }
         res.send(orders);
     });
-});
+    }});
 
-router.get('/:orderId', loadOrderId, function(req, res, next) {
+router.get('/:orderId', loadOrderId, passport.authenticate('jwt', {session: false}), function(user, req, res, next) 
+{
+    console.log(req.order.userId);
     res.send(req.order);
 });
 
