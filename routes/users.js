@@ -18,13 +18,13 @@ const passport = require('passport');
  * @apiError NoAccessRight Only authenticated Admins can access the data.
  */
 
-router.get('/', function(req, res, next) {
-  User.find().sort('name').exec(function(err, users) {
-    if (err) {
-      return next(err);
-    }
-    res.send(users);
-  });
+router.get('/', passport.authenticate('jwt', {session: false}), function (user, req, res, next) {
+    User.find().sort('name').exec(function (err, users) {
+        if (err) {
+            return next(err);
+        }
+        res.send(users);
+    });
 });
 
 router.get('/:userId/orders', function(req, res, next){
@@ -42,7 +42,23 @@ router.get('/:userId/orders', function(req, res, next){
     });
 });
 
-router.get('/protected', passport.authenticate('jwt', {session:false}), function(user, req, res, next) {
+/**
+ * @api {get} /users/protected Test route Send logged user email
+ * @apiName GetUserEmail
+ * @apiGroup User
+ * @apiPermission user and admin
+ * 
+ * @apiParamExample {url} Example usage:
+ * http://localhost:3000/users/5bc766872b4eb60ccc24766a
+ *
+ *
+ * @apiUse successUser
+ * 
+ * @apiError NoAccessRight Only authenticated Admins can access the data.
+ * @apiError UserNotFound The <code>id</code> of the User was not found.
+ */
+
+router.get('/protected', passport.authenticate('jwt', {session: false}), function (user, req, res, next) {
     res.send(user.email); //id --> _id dans la DB
 });
 
@@ -58,20 +74,15 @@ router.get('/protected', passport.authenticate('jwt', {session:false}), function
  * http://localhost:3000/users/5bc766872b4eb60ccc24766a
  *
  * @apiParam {Number} id Unique identifier of the user
- *
- * @apiUse successUser
+
  * 
  * @apiError NoAccessRight Only authenticated Admins can access the data.
  * @apiError UserNotFound The <code>id</code> of the User was not found.
  */
 
-router.get('/:userId', loadUserId, function(req, res, next) {
-
-    res.send(req.user);
+router.get('/:userId', loadUserId, passport.authenticate('jwt', {session: false}), function (user, req, res, next) {
+    res.send(user);
 });
-
-
-
 
 
 /**
@@ -93,13 +104,14 @@ router.get('/:userId', loadUserId, function(req, res, next) {
  * @apiError UserNotFound The <code>id</code> of the User was not found.
  */
 
-router.delete('/:userId', loadUserId, function(req, res, next) {
+router.delete('/:userId', loadUserId, passport.authenticate('jwt', {session: false}), function (user, req, res, next) {
 
-    req.user.remove(function(err,deleteduser){
-      if (err) {
-        return next(err);
-      }
-      res.sendStatus(204);
+    req.user.remove(function (err, deleteduser) 
+    {
+        if (err) {
+            return next(err);
+        }
+        res.sendStatus(204);
     });
 });
 
@@ -110,17 +122,17 @@ router.delete('/:userId', loadUserId, function(req, res, next) {
  * @apiPermission none
  * 
  * @apiParamExample {json} Example usage:
-                 {
-  "firstname": "John",
-  "name": "Doe",
-  "email": "John.Doe@gmail.com",
-  "password": "toor",
-  "address": {
-    "street": "Avenue des Sports 20",
-   "NPA": "1401",
-    "City": "Yverdon-les-Bains"
-  }
-}
+ {
+ "firstname": "John",
+ "name": "Doe",
+ "email": "John.Doe@gmail.com",
+ "password": "toor",
+ "address": {
+ "street": "Avenue des Sports 20",
+ "NPA": "1401",
+ "City": "Yverdon-les-Bains"
+ }
+ }
  * @apiParam {String} firstName First name of the user
  * @apiParam {String} name  Last name of the user
  * @apiParam {String} e-mail E-mail of the user
@@ -134,33 +146,33 @@ router.delete('/:userId', loadUserId, function(req, res, next) {
  * 
  * @apiError User validation failed
  */
-router.post('/', function(req, res, next) {
-    
+router.post('/', function (req, res, next) {
+
     const plainPassword = req.body.password;
     const saltRounds = 10;
-  
-    bcrypt.hash(plainPassword, saltRounds, function(err, hashedPassword) {
-    if (err) {
-      return next(err);
-    }
-    const newUser = new User(req.body);
-    newUser.password = hashedPassword;
-    newUser.save(function(err, savedUser) {
-      if (err) {
-        return next(err);
-      }
-      res
-          .status(201)
-          .set('Location', `http://localhost:3000/users/${savedUser._id}`)
-          .send(savedUser);
+
+    bcrypt.hash(plainPassword, saltRounds, function (err, hashedPassword) {
+        if (err) {
+            return next(err);
+        }
+        const newUser = new User(req.body);
+        newUser.password = hashedPassword;
+        newUser.save(function (err, savedUser) {
+            if (err) {
+                return next(err);
+            }
+            res
+                    .status(201)
+                    .set('Location', `http://localhost:3000/users/${savedUser._id}`)
+                    .send(savedUser);
+        });
     });
-  }); 
-    
+
 });
 
 
 function loadUserId(req, res, next) {
-    User.findById(req.params.userId).exec(function(err, user) {
+    User.findById(req.params.userId).exec(function (err, user) {
         if (err) {
             return next(err);
         } else if (!user) {
@@ -185,16 +197,16 @@ module.exports = router;
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
  * {
-    "_id": "5bc764b0a8ce7a3060a98af9",
-    "firstname": "John",
-    "name": "Doe",
-    "email": "John.Doe@gmail.com",
-    "password": "$2a$10$Py3VOkDWvoYcaydFjs6yEOlEmSiOXEeKURov1coXyc/7YqHMJo1uC",
-    "address": {
-        "street": "Avenue des Sports 20",
-        "NPA": 1401,
-        "City": "Yverdon-les-Bains"
-    },
-    "__v": 0
-  }
+ "_id": "5bc764b0a8ce7a3060a98af9",
+ "firstname": "John",
+ "name": "Doe",
+ "email": "John.Doe@gmail.com",
+ "password": "$2a$10$Py3VOkDWvoYcaydFjs6yEOlEmSiOXEeKURov1coXyc/7YqHMJo1uC",
+ "address": {
+ "street": "Avenue des Sports 20",
+ "NPA": 1401,
+ "City": "Yverdon-les-Bains"
+ },
+ "__v": 0
+ }
  */
