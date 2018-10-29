@@ -27,7 +27,7 @@ router.get('/', passport.authenticate('jwt', {session: false}), function (user, 
     });
 })
 
-router.get('/:userId/nbrOrders', function(req, res, next){
+router.get('/:userId/nbrOrders', passport.authenticate('jwt', {session: false}), function(user, req, res, next){
     User.findOne({_id:req.params.userId},(err,user) => {
         Order.aggregate([
             {
