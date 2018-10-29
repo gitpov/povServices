@@ -24,7 +24,7 @@ router.get('/', passport.authenticate('jwt', {session: false}), function (user, 
 
         res.send(users);
     });
-})
+});
 
 router.get('/:userId/nbrOrders', function(req, res, next){
     User.findOne({_id:req.params.userId},(err,user) => {
