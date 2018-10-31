@@ -2,14 +2,14 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 
-const product_model = require('../models/product');
+const Product = require('../models/product');
 const passport = require('passport');
 var admin = true;
 
 
 router.get('/', function(req, res, next) 
 {
-    var query = product_model.find();
+    var query = Product.find();
 
     if(req.query.name)
     {
@@ -40,18 +40,14 @@ router.get('/', function(req, res, next)
         
     
 
-    product_model.find().count(function(err, total) {
+    Product.find().count(function(err, total) {
         if (err) {
             return next(err);
         }
 
-        let query = product_model.find();
+        let query = Product.find();
 
         let page = parseInt(req.query.page, 10);
-
-        console.log(page);
-
-        console.log(page);
 
         if (isNaN(page) || page < 1) {
             page = 1;
@@ -59,16 +55,27 @@ router.get('/', function(req, res, next)
 
         let pageSize = parseInt(req.query.pageSize, 10);
 
+
+        console.log(pageSize);
+
         if (isNaN(pageSize)) {
             pageSize = 10;
+            let totPage = total/pageSize;
+            if (req.query.page > totPage)
+            {
+                page = 1;
+            }
         } else if (pageSize > 100) {
             pageSize = 100;
         } else if (pageSize < 1) {
             pageSize = 1;
         }
 
+
         query = query.skip((page - 1) * pageSize).limit(pageSize);
-        
+
+
+
         query.exec(function(err, products) {
             if (err) {
                 return next(err);
@@ -125,7 +132,7 @@ router.post('/', passport.authenticate('jwt', {session: false}), function(user, 
  }
  else
  {
-    const newProduct = new product_model(req.body);
+    const newProduct = new Product(req.body);
 
     newProduct.save(function(err, savedProduct) {
         if (err) {
@@ -193,7 +200,7 @@ router.delete('/:productId', loadProductId, passport.authenticate('jwt', {sessio
     }});
 
 function loadProductId(req, res, next) {
-    product_model.findById(req.params.productId).exec(function(err, product) {
+    Product.findById(req.params.productId).exec(function(err, product) {
         if (err) {
             return next(err);
         } else if (!product) {

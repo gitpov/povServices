@@ -50,8 +50,6 @@ router.get('/:userId/nbrOrders', passport.authenticate('jwt', {session: false}),
             res.send(results)
         })
     })
-
-
 });
 
 router.get('/:userId/orders', passport.authenticate('jwt', {session: false}), function(user, req, res, next){
