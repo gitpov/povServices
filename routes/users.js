@@ -6,7 +6,7 @@ var bcrypt = require('bcryptjs');
 const passport = require('passport');
 
 /**
- * @api {get} /users/ Request all users's information
+ * @api {get} /users/ Request all users's informations
  * @apiName GetUsers
  * @apiGroup User
  * @apiPermission admin
@@ -15,7 +15,6 @@ const passport = require('passport');
  * 
  * @apiError NoAccessRight Only authenticated Admins can access the data.
  */
-
 router.get('/', passport.authenticate('jwt', {session: false}), function (user, req, res, next) {
     User.find().sort('name').exec(function (err, users) {
         if (err) {
@@ -27,6 +26,18 @@ router.get('/', passport.authenticate('jwt', {session: false}), function (user, 
     });
 });
 
+/**
+ * @api {get} /users/:Id/nbrOrders Request the number of the user's orders
+ * @apiName GetUserNbrOrders
+ * @apiGroup User
+ * @apiPermission admin or user
+ * 
+ * @apiParamExample {url} Example usage:
+ * http://localhost:3000/users/5bc766872b4eb60ccc24766a/nbrOrders
+ * 
+ * @apiError NoAccessRight Only authenticated Admins can access the data.
+ * @apiError UserNotFound The <code>id</code> of the User was not found.
+ */
 router.get('/:userId/nbrOrders', passport.authenticate('jwt', {session: false}), function(user, req, res, next){
     User.findOne({_id:req.params.userId},(err,user) => {
         Order.aggregate([
@@ -52,6 +63,18 @@ router.get('/:userId/nbrOrders', passport.authenticate('jwt', {session: false}),
     })
 });
 
+/**
+ * @api {get} /users/:Id/orders Request the user's orders
+ * @apiName GetUserOrders
+ * @apiGroup User
+ * @apiPermission admin or user
+ * 
+ * @apiParamExample {url} Example usage:
+ * http://localhost:3000/users/5bc766872b4eb60ccc24766a/orders
+ * 
+ * @apiError NoAccessRight Only authenticated Admins can access the data.
+ * @apiError UserNotFound The <code>id</code> of the User was not found.
+ */
 router.get('/:userId/orders', passport.authenticate('jwt', {session: false}), function(user, req, res, next){
 
     let query = Order.find();
@@ -75,10 +98,9 @@ router.get('/:userId/orders', passport.authenticate('jwt', {session: false}), fu
  * @apiPermission user and admin
  * 
  * @apiParamExample {url} Example usage:
- * http://localhost:3000/users/5bc766872b4eb60ccc24766a
+ * http://localhost:3000/users/protected
  *
- *
- * @apiUse successUser
+ * @apiSuccess {String} e-mail E-mail of the user
  * 
  * @apiError NoAccessRight Only authenticated Admins can access the data.
  * @apiError UserNotFound The <code>id</code> of the User was not found.
@@ -91,7 +113,7 @@ router.get('/protected', passport.authenticate('jwt', {session: false}), functio
 
 
 /**
- * @api {get} /users/:id Request a user's information
+ * @api {get} /users/:id Request a user's informations
  * @apiName GetUser
  * @apiGroup User
  * @apiPermission user and admin
@@ -100,7 +122,8 @@ router.get('/protected', passport.authenticate('jwt', {session: false}), functio
  * http://localhost:3000/users/5bc766872b4eb60ccc24766a
  *
  * @apiParam {Number} id Unique identifier of the user
- 
+ * 
+ * @apiUse successUser
  * 
  * @apiError NoAccessRight Only authenticated Admins can access the data.
  * @apiError UserNotFound The <code>id</code> of the User was not found.
@@ -259,6 +282,8 @@ router.patch('/:userId', loadUserId, passport.authenticate('jwt', {session: fals
     res.status(200).send(savedUser);
   });
 });
+
+
 /**
  * @api {post} /users/ Add a user
  * @apiName AddUser

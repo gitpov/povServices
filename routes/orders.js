@@ -12,7 +12,16 @@ var admin = true;
 
 /* GET order listing. */
 
-
+/**
+ * @api {get} /orders/ Request all orders's informations
+ * @apiName GetOrders
+ * @apiGroup Order
+ * @apiPermission admin
+ * 
+ * @apiUse successOrder
+ * 
+ * @apiError NoAccessRight Only authenticated Admins can access the data.
+ */
 router.get('/', passport.authenticate('jwt', {session: false}), function (user, req, res, next)
 {
     if (!admin)
@@ -31,7 +40,22 @@ router.get('/', passport.authenticate('jwt', {session: false}), function (user, 
     }
 });
 
-
+/**
+ * @api {get} /orders/:id Request a order's informations
+ * @apiName GetOrder
+ * @apiGroup Order
+ * @apiPermission user and admin
+ * 
+ * @apiParamExample {url} Example usage:
+ * http://localhost:3000/orders/5bc766872b4eb60ccc24766a
+ *
+ * @apiParam {Number} id Unique identifier of the order
+ * 
+ * @apiUse successOrder
+ * 
+ * @apiError NoAccessRight Only authenticated Admins can access the data.
+ * @apiError OrderNotFound The <code>id</code> of the Order was not found.
+ */
 router.get('/:orderId', loadOrderId, passport.authenticate('jwt', {session: false}), function (user, req, res, next)
 {
     if (!user._id.equals(req.order.userId))
@@ -43,6 +67,22 @@ router.get('/:orderId', loadOrderId, passport.authenticate('jwt', {session: fals
     }
 });
 
+/**
+ * @api {get} /orders/:id Request the products of the user's order
+ * @apiName GetUserOrderProducts
+ * @apiGroup Order
+ * @apiPermission user and admin
+ * 
+ * @apiParamExample {url} Example usage:
+ * http://localhost:3000/orders/5bc766872b4eb60ccc24766a/products
+ *
+ * @apiParam {Number} id Unique identifier of the order
+ * 
+ * @apiUse successOrder
+ * 
+ * @apiError NoAccessRight Only authenticated Admins can access the data.
+ * @apiError OrderNotFound The <code>id</code> of the Order was not found.
+ */
 router.get('/:orderId/products', loadOrderId, passport.authenticate('jwt', {session: false}), function (user, req, res, next) {
 
     if (!user._id.equals(req.order.userId))
@@ -54,6 +94,24 @@ router.get('/:orderId/products', loadOrderId, passport.authenticate('jwt', {sess
     }
 });
 
+/**
+ * @api {post} /orders/ Add an order for a user with products
+ * @apiName AddOrder
+ * @apiGroup Order
+ * @apiPermission admin and user
+ * 
+ * @apiParamExample {json} Example usage:
+                 {
+    
+    }
+
+ * @apiParam {String} date Date of the order
+ * 
+ * @apiUse successOrder
+ * 
+ * @apiError NoAccessRight Only authenticated Admins can access the data.  
+ * @apiError Order validation failed
+ */
 router.post('/', passport.authenticate('jwt', {session: false}), function (user, req, res, next) {
 
     const newOrder = new Order(req.body);
@@ -67,6 +125,22 @@ router.post('/', passport.authenticate('jwt', {session: false}), function (user,
     });
 });
 
+/**
+ * @api {put} /orders/:Id Modify an order
+ * @apiName ModifyOrder
+ * @apiGroup Order
+ * @apiPermission admin
+ * 
+ * @apiParamExample {url} Example usage:
+ * http://localhost:3000/orders/5bc766872b4eb60ccc24766a
+
+ * @apiParam {Number} id Unique identifier of the order
+ * 
+ * @apiUse successOrder
+ * 
+ * @apiError NoAccessRight Only authenticated Admins can access the data.  
+ * @apiError OrderNotFound The <code>id</code> of the Order was not found.
+ */
 router.patch('/:orderId', loadOrderId, passport.authenticate('jwt', {session: false}), function (user, req, res, next) {
 
     if (!admin)
@@ -131,3 +205,16 @@ function loadOrderId(req, res, next) {
 
 
 module.exports = router;
+
+/**
+ * @apiDefine successOrder
+ * @apiSuccess {date} date Date of the order
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+ "_id": "5bc764b0a8ce7a3060a98af9",
+ "date": 20181010
+ },
+ "__v": 0
+ }
+ */

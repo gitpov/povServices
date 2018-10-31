@@ -6,7 +6,15 @@ const Product = require('../models/product');
 const passport = require('passport');
 var admin = true;
 
-
+/**
+ * @api {get} /products/ Request all products's informations
+ * @apiName GetProducts
+ * @apiGroup Product
+ * @apiPermission none
+ * 
+ * @apiUse successProduct
+ * 
+ */
 router.get('/', function(req, res, next) 
 {
     var query = Product.find();
@@ -94,8 +102,24 @@ router.get('/', function(req, res, next)
     });
     }});
 
-router.get('/:productId', loadProductId, function(req, res, next) {
 
+/**
+ * @api {get} /products/:id Request a product's informations
+ * @apiName GetProduct
+ * @apiGroup Product
+ * @apiPermission none
+ * 
+ * @apiParamExample {url} Example usage:
+ * http://localhost:3000/products/5bc766872b4eb60ccc24766a
+ *
+ * @apiParam {Number} id Unique identifier of the products
+ * 
+ * @apiUse successProduct
+ * 
+ * @apiError NoAccessRight Only authenticated Admins can access the data.
+ * @apiError ProductNotFound The <code>id</code> of the Product was not found.
+ */    
+router.get('/:productId', loadProductId, function(req, res, next) {
 
     res.send(req.product);
 
@@ -143,6 +167,23 @@ router.post('/', passport.authenticate('jwt', {session: false}), function(user, 
     });
     }});
 
+
+/**
+ * @api {put} /products/ Modify a product
+ * @apiName ModifyProduct
+ * @apiGroup Product
+ * @apiPermission admin
+ * 
+ * @apiParamExample {url} Example usage:
+ * http://localhost:3000/products/5bc766872b4eb60ccc24766a
+
+ * @apiParam {Number} id Unique identifier of the products
+ * 
+ * @apiUse successProduct
+ * 
+ * @apiError NoAccessRight Only authenticated Admins can access the data.  
+ * @apiError ProductNotFound The <code>id</code> of the Product was not found.
+ */
 router.put('/:productId', loadProductId, passport.authenticate('jwt', {session: false}), function(user, req, res, next) 
 {
 
@@ -164,7 +205,8 @@ if(!admin)
         res.status(200).send(updatedProduct);
 
     });
-    }});
+    }}
+);
 
 /**
  * @api {delete} /Product/:id Delete a Product
@@ -197,7 +239,8 @@ router.delete('/:productId', loadProductId, passport.authenticate('jwt', {sessio
         }
         res.sendStatus(204);
     });
-    }});
+    }}
+);
 
 function loadProductId(req, res, next) {
     Product.findById(req.params.productId).exec(function(err, product) {
