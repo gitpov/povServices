@@ -55,7 +55,7 @@ router.get('/:userId/nbrOrders', passport.authenticate('jwt', {session: false}),
 });
 
 router.get('/:userId/orders', passport.authenticate('jwt', {session: false}), function(user, req, res, next){
-    
+
     let query = Order.find();
 
     query = query.where('userId').equals(req.params.userId);

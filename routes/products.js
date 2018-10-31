@@ -17,14 +17,15 @@ router.get('/', function(req, res, next)
 
         let query = product_model.find();
 
-        let page = parseInt(req.query.page, 1);
+        let page = parseInt(req.query.page, 10);
 
         console.log(page);
-/*
+
+        console.log(page);
+
         if (isNaN(page) || page < 1) {
             page = 1;
         }
-*/
 
         let pageSize = parseInt(req.query.pageSize, 10);
 
@@ -36,8 +37,8 @@ router.get('/', function(req, res, next)
             pageSize = 1;
         }
 
-        query = query.skip(page*pageSize).limit(pageSize);
-
+        query = query.skip((page - 1) * pageSize).limit(pageSize);
+        
         query.exec(function(err, products) {
             if (err) {
                 return next(err);

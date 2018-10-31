@@ -67,8 +67,6 @@ router.post('/', passport.authenticate('jwt', {session: false}), function (user,
     });
 });
 
-
-
 router.patch('/:orderId', loadOrderId, passport.authenticate('jwt', {session: false}), function (user, req, res, next) {
 
     if (!admin)
