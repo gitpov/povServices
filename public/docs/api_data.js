@@ -1,6 +1,80 @@
 define({ "api": [
   {
     "type": "post",
+    "url": "/login",
+    "title": "Login with a user",
+    "name": "Login",
+    "group": "Login",
+    "permission": [
+      {
+        "name": "none"
+      }
+    ],
+    "parameter": {
+      "examples": [
+        {
+          "title": "Example usage:",
+          "content": "             {\n\"email\": \"John.Doe@gmail.com\",\n\"password\": \"toor\"\n}",
+          "type": "json"
+        }
+      ],
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "email",
+            "description": "<p>email of the user to login</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "password",
+            "optional": false,
+            "field": "password",
+            "description": "<p>Password of the user to login</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "string",
+            "optional": false,
+            "field": "Token",
+            "description": "<p>Token to authenticate user's session logge</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n{eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjViZGMyM2VjZTg3ODVlMDAxNTc1MWQ0NCIsImlhdCI6MTU0MTE1NzAzM30.x1mrw03aL0wCp9DKMv7CPwcQvre4WilBuzzb0F79Bkc}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "Login",
+            "description": "<p>validation failed</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "routes/users.js",
+    "groupTitle": "Login"
+  },
+  {
+    "type": "post",
     "url": "/orders/",
     "title": "Add an order for a user with products",
     "name": "AddOrder",

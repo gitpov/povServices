@@ -6,6 +6,29 @@ var bcrypt = require('bcryptjs');
 const passport = require('passport');
 
 /**
+ * @api {post} /login Login with a user
+ * @apiName Login
+ * @apiGroup Login
+ * @apiPermission none
+ * 
+ * @apiParamExample {json} Example usage:
+                 {
+    "email": "John.Doe@gmail.com",
+    "password": "toor"
+    }
+
+ * @apiParam {String} email email of the user to login
+ * @apiParam {password} password  Password of the user to login
+ * 
+ * @apiSuccess {string} Token Token to authenticate user's session logge
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjViZGMyM2VjZTg3ODVlMDAxNTc1MWQ0NCIsImlhdCI6MTU0MTE1NzAzM30.x1mrw03aL0wCp9DKMv7CPwcQvre4WilBuzzb0F79Bkc
+ * 
+ * @apiError Login validation failed
+ */
+
+/**
  * @api {get} /users/ Request all users's informations
  * @apiName GetUsers
  * @apiGroup User
