@@ -12,6 +12,14 @@ var admin = true;
  * @apiGroup Product
  * @apiPermission none
  * 
+ * @apiParam {string} name Name to filter the product list
+ * @apiParam {number} price Price to filter the product list
+ * 
+ * @apiParamExample {url} Example usage:
+ * http://localhost:3000/products/
+ * https://localhost:3000/products/?name=Banana
+ * https://localhost:3000/products/?price=1.9
+ * 
  * @apiUse successProduct
  * 
  */

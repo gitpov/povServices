@@ -26,6 +26,7 @@ router.get('/', passport.authenticate('jwt', {session: false}), function (user, 
     });
 });
 
+
 /**
  * @api {get} /users/:Id/nbrOrders Request the number of the user's orders
  * @apiName GetUserNbrOrders
@@ -34,6 +35,15 @@ router.get('/', passport.authenticate('jwt', {session: false}), function (user, 
  * 
  * @apiParamExample {url} Example usage:
  * http://localhost:3000/users/5bc766872b4eb60ccc24766a/nbrOrders
+ * 
+ * @apiSuccess {number} id Unique Id of the user
+ * @apiSuccess {number} ordersCount  Number of orders of the user
+ * @apiSuccessExample Success-Response:
+ * HTTP/1.1 200 OK
+ * {
+        "_id": "5bdc23ece8785e0015751d44",
+        "ordersCount": 1
+    }
  * 
  * @apiError NoAccessRight Only authenticated Admins can access the data.
  * @apiError UserNotFound The <code>id</code> of the User was not found.
@@ -71,6 +81,8 @@ router.get('/:userId/nbrOrders', passport.authenticate('jwt', {session: false}),
  * 
  * @apiParamExample {url} Example usage:
  * http://localhost:3000/users/5bc766872b4eb60ccc24766a/orders
+ * 
+ * @apiUse successOrder
  * 
  * @apiError NoAccessRight Only authenticated Admins can access the data.
  * @apiError UserNotFound The <code>id</code> of the User was not found.

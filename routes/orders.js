@@ -102,7 +102,18 @@ router.get('/:orderId/products', loadOrderId, passport.authenticate('jwt', {sess
  * 
  * @apiParamExample {json} Example usage:
                  {
-    
+	"pickup_date": 20181102180000,
+	"orderLines": [{
+		"productId": "5bdc26a6e8785e0015751d45",
+		"quantity": 5
+	},{
+		"productId":"5bdc26b2e8785e0015751d46",
+		"quantity": 3
+	},{
+		"productId":"5bdc26c3e8785e0015751d48",
+		"quantity": 8
+	}],
+	"state": "En cours"
     }
 
  * @apiParam {String} date Date of the order
@@ -209,12 +220,37 @@ module.exports = router;
 /**
  * @apiDefine successOrder
  * @apiSuccess {date} date Date of the order
+ * @apiSuccess {date} pickup_date Date and Hour of pick up time
+ * @apiSuccess {Object} orderLines OrderLines of the order
+ * @apiSuccess {number} orderLines.productId Unique Id of the product
+ * @apiSuccess {number} orderLines.quantity Quantity of the product
+ * @apiSuccess {string} state State of the order
+ * @apiSuccess {number} userId Unique Id of the user
  * @apiSuccessExample Success-Response:
  * HTTP/1.1 200 OK
  * {
- "_id": "5bc764b0a8ce7a3060a98af9",
- "date": 20181010
- },
- "__v": 0
- }
+    "_id": "5bdc295be8785e0015751d51",
+    "pickup_date": "2609-07-07T13:43:00.000Z",
+    "orderLines": [
+        {
+            "_id": "5bdc295be8785e0015751d54",
+            "productId": "5bdc26a6e8785e0015751d45",
+            "quantity": 5
+        },
+        {
+            "_id": "5bdc295be8785e0015751d53",
+            "productId": "5bdc26b2e8785e0015751d46",
+            "quantity": 3
+        },
+        {
+            "_id": "5bdc295be8785e0015751d52",
+            "productId": "5bdc26c3e8785e0015751d48",
+            "quantity": 8
+        }
+    ],
+    "state": "En cours",
+    "date": "2018-11-02T10:39:23.116Z",
+    "userId": "5bdc23ece8785e0015751d44",
+    "__v": 0
+}
  */
