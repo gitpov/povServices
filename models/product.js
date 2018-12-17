@@ -4,7 +4,13 @@ const Schema = mongoose.Schema;
 const ProductSchema = new Schema({
     name: {type: String, required: true, max: 100},
     price: {type: Number, required: true},
-    image: {type: String}
+    image: {type: String},
+    ingredients: [{
+        ingredient: [{
+            description: {type: String},
+            poids: {type: Number}
+        }]
+    }]
 });
 
 
