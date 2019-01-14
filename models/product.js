@@ -6,10 +6,10 @@ const ProductSchema = new Schema({
     price: {type: Number, required: true},
     image: {type: String},
     ingredients: [{
-        ingredient: [{
+        ingredient: {
             description: {type: String},
             poids: {type: Number}
-        }]
+        }
     }]
 });
 
