@@ -79,7 +79,7 @@ app.post('/login', function(req, res, next){
         if(bcrypt.compareSync(req.body.password, user.password)){
             const payload = {id:user.id};
             const token = jwt.sign(payload, process.env.SECRET_KEY);
-            res.send(token);
+            res.send({token:token});
         } else {
             res.status(401).send('Bad credentials');
         }
