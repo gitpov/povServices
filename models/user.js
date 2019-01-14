@@ -11,7 +11,8 @@ const userSchema = new Schema({
     street: {type: String, required: true},
     NPA: {type: Number, required: true},
     City: {type: String, required: true},
-  }
+  },
+   image: {type: String}
 });
 // Create the model from the schema and export it
 module.exports = mongoose.model('User', userSchema);
