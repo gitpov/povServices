@@ -247,6 +247,7 @@ router.put('/:userId', loadUserId, passport.authenticate('jwt', {session: false}
         req.user.address.City = req.body.address.City;
         req.user.address.NPA = req.body.address.NPA;
         req.user.address.street = req.body.address.street;
+        req.user.image = req.body.image;
 
         req.user.save(function (err, savedUser)
         {
@@ -306,6 +307,9 @@ router.patch('/:userId', loadUserId, passport.authenticate('jwt', {session: fals
   }
   if (req.body.address.street !== undefined) {
     req.user.address.street = req.body.address.street;
+  }
+  if (req.body.image !== undefined) {
+    req.user.image = req.body.image;
   }
 
 
