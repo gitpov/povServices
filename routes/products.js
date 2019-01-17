@@ -37,10 +37,6 @@ router.get('/', function(req, res, next)
                 return next(err);
             }
             res.send({
-                page: page,
-                pageSize: pageSize,
-                total: total,
-                totalPages: totalPages,
                 data: products
             });
         });
