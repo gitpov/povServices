@@ -29,14 +29,20 @@ router.get('/', function(req, res, next)
 
     if(req.query.name)
     {
-        //query=query.where('name').includes(req.query.name);
+        
         query=query.where('name').equals(req.query.name);
         query.exec(function(err, products){
             if(err)
             {
                 return next(err);
             }
-            res.send(products);
+            res.send({
+                page: page,
+                pageSize: pageSize,
+                total: total,
+                totalPages: totalPages,
+                data: products
+            });
         });
         
     }
@@ -48,7 +54,13 @@ router.get('/', function(req, res, next)
             {
                 return next(err);
             }
-            res.send(products);
+            res.send({
+                page: page,
+                pageSize: pageSize,
+                total: total,
+                totalPages: totalPages,
+                data: products
+            });
         });
         
     }
