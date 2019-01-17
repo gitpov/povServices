@@ -30,7 +30,7 @@ router.get('/', function(req, res, next)
     if(req.query.name)
     {
         //query=query.where('name').includes(req.query.name);
-        query=query.where('name').equals("%" + req.query.name +"%");
+        query=query.where('name').like(req.query.name);
         query.exec(function(err, products){
             if(err)
             {
