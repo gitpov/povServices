@@ -297,17 +297,20 @@ router.patch('/:userId', loadUserId, passport.authenticate('jwt', {session: fals
     {
     req.user.password = req.body.password;
     }
-    
-  if (req.body.address.City !== undefined) {
-    req.user.address.City = req.body.address.City;
-  }
-  
-  if (req.body.address.NPA !== undefined) {
-    req.user.address.NPA = req.body.address.NPA;
-  }
-  if (req.body.address.street !== undefined) {
-    req.user.address.street = req.body.address.street;
-  }
+   if(req.body.address !== undefined)
+   {
+    if (req.body.address.City !== undefined) {
+        req.user.address.City = req.body.address.City;
+      }
+      
+      if (req.body.address.NPA !== undefined) {
+        req.user.address.NPA = req.body.address.NPA;
+      }
+      if (req.body.address.street !== undefined) {
+        req.user.address.street = req.body.address.street;
+      }
+   } 
+ 
   if (req.body.image !== undefined) {
     req.user.image = req.body.image;
   }
