@@ -50,6 +50,17 @@ router.get('/', function(req, res, next)
             res.send(products);
         });
         
+    }else if(req.query.description)
+    {
+        query=query.where('description').equals(req.query.description);
+        query.exec(function(err, products){
+            if(err)
+            {
+                return next(err);
+            }
+            res.send(products);
+        });
+        
     }
     else
     {
